@@ -1,10 +1,13 @@
 from fastapi import FastAPI
+from .api.main import app_router
+from .core.config import settings
 
 app = FastAPI(
-    title="GlobalGen AI Bank API",
-    description="API for GlobalGen AI Bank services",
+    title=settings.PROJECT_NAME,
+    description=settings.PROJECT_DESCRIPTION,
+    docs_url=f"{settings.API_V1_STR}/docs",
+    redoc_url=f"{settings.API_V1_STR}/redoc",
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
 
-@app.get("/")
-def Home():
-    return {"message": "Welcome to the GlobalGen AI Bank API!"}
+app.include_router(app_router, prefix=settings.API_V1_STR)
