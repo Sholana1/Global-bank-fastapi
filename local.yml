@@ -27,6 +27,8 @@ services:
     depends_on:
       - postgres
       - mailpit
+      - redis
+      - rabbitmq
     command: /start.sh
     networks:
       - globalgen_local_nw
@@ -64,6 +66,55 @@ services:
       - ./.envs/.env.local
     networks:
       - globalgen_local_nw
+  
+  redis:
+    image: docker.io/redis:7.0-alpine
+    command: redis-server --appendonly yes
+    networks:
+      - globalgen_local_nw
+  
+  rabbitmq:
+    image: docker.io/rabbitmq:3.13-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - globalbank_rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - globalgen_local_nw
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.entrypoints=web"
+      - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.localhost`)"
+      - "traefik.http.routers.rabbitmq.service=rabbitmq-service"
+      - "traefik.http.services.rabbitmq-service.loadbalancer.server.port=15672"
+
+  celeryworker:
+    <<: *api
+    ports: []
+    command: /start-celeryworker.sh
+
+  flower:
+    <<: *api
+    ports:
+      - "5555:5555"
+    volumes:
+      - globalbank_flower_data:/data
+    command: /start-flower.sh
+    depends_on:
+      - redis
+      - rabbitmq
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flower.entrypoints=web"
+      - "traefik.http.routers.flower.rule=Host(`flower.localhost`)"
+      - "traefik.http.routers.flower.service=flower-service"
+      - "traefik.http.services.flower-service.loadbalancer.server.port=5555"
+  
+  celerybeat:
+    <<: *api
+    ports: []
+    command: /start-celerybeat.sh
 
 networks:
   globalgen_local_nw:
@@ -72,3 +123,5 @@ networks:
 volumes:
   globalbank_data:
   globalgen_mailpit_data:
+  globalbank_rabbitmq_data:
+  globalbank_flower_data:
