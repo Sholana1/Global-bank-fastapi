@@ -1,15 +1,17 @@
 import os
+
 from loguru import logger
-from app.core.config import settings
+
+from backend.app.core.config import settings
 
 logger.remove()
 
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
 
 LOG_FORMAT = (
-    "{time:YYYY-MM-DD HH:mm:ss.SSS} |"
-    "{level: <8} |"
-    "{name}:{function}:{line} -"
+    "{time:YYYY-MM-DD HH:mm:ss.SSS} | "
+    "{level: <8} | "
+    "{name}:{function}:{line} - "
     "{message}"
 )
 
@@ -33,6 +35,7 @@ logger.add(
     backtrace=True,
     diagnose=True,
 )
+
 
 def get_logger():
     return logger
