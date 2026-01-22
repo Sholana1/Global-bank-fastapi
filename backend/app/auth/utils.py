@@ -13,7 +13,7 @@ def generate_otp(length: int =6) -> str:
     otp = "".join(random.choices(string.digits, k=length))
     return otp
 
-def generte_password_hash(password: str) -> str:
+def generate_password_hash(password: str) -> str:
     return _ph.hash(password)
 
 def verify_password(hashed_password: str, password: str) -> bool:
@@ -27,7 +27,9 @@ def generate_username() -> str:
     words = bank_name.split()
     prefix = "".join([word[0] for word in words]).upper()
     remaining_length = 12 - len(prefix) - 1
-    random_string = "".join(random.choices(string.ascii_uppercase, + string.digits, k=remaining_length))
+    # FIX: Combine the strings correctly
+    chars = string.ascii_uppercase + string.digits
+    random_string = "".join(random.choices(chars, k=remaining_length))
     username = f"{prefix}-{random_string}"
     return username
 
@@ -35,7 +37,7 @@ def create_activation_token(id: uuid.UUID) -> str:
     payload = {
         "id": str(id),
         "type": "activation",
-        "exp": datetime.now(timezone) + timedelta(minutes=settings.ACTIVATION_TOKEN_EXPIRATION_MINUTES),
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=settings.ACTIVATION_TOKEN_EXPIRATION_MINUTES),
         "iat": datetime.now(timezone.utc),
     }
     

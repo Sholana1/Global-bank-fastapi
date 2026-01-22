@@ -26,6 +26,7 @@ class AccountStatusSchema(str, Enum):
     INACTIVE = "inactive"
     SUSPENDED = "suspended"
     PENDING = "pending"
+    LOCKED = "locked"
     
 class RoleChoiceSchema(str, Enum):
     CUSTOMER = "customer"
@@ -72,7 +73,7 @@ class UserReadSchema(BaseUserSchema):
     full_name: str
     
 class EmailRequestSchema(SQLModel, table=False):
-    emai:EmailStr
+    email:EmailStr
 
 class LoginRequestSchema(SQLModel, table=False):
     email: EmailStr

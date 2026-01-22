@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     OTP_EXPIRATION_MINUTES: int = 2 if ENVIRONMENT == "local" else 5
     LOGIN_ATTEMPTS: int = 3
     LOGOUT_DURATION_MINUTES: int = 2 if ENVIRONMENT == "local" else 5
+    LOCKOUT_DURATION_MINUTES: int = 2 if ENVIRONMENT == "local" else 5
     ACTIVATION_TOKEN_EXPIRATION_MINUTES: int = 2 if ENVIRONMENT == "local" else 5
     API_BASE_URL:str = ""
     SUPPORT_EMAIL:str = ""
